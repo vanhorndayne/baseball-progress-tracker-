@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baseball Offseason Tracker</title>
+<style>
+:root{--navy:#101d33;--blue:#2e69d1;--red:#e24b4b;--bg:#f3f6fb;--card:#fff;--muted:#64748b;--line:#e3e9f2;--green:#16845b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17243a}
+header{background:linear-gradient(120deg,#101d33,#203e67);color:#fff;padding:28px 18px 24px}
+.wrap{max-width:1050px;margin:auto} .eyebrow{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:#b8c9e7;font-weight:800}
+h1{margin:6px 0;font-size:clamp(1.8rem,4vw,2.7rem)}header p{margin:6px 0 0;color:#d6e1f2}
+main{max-width:1050px;margin:20px auto;padding:0 14px 40px}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 4px 18px #122b4b08}
+.stat{grid-column:span 3}.wide{grid-column:span 7}.side{grid-column:span 5}.full{grid-column:span 12}
+.stat .label{font-size:.82rem;color:var(--muted);font-weight:650}.stat .value{font-size:1.8rem;font-weight:850;margin:5px 0}.small{font-size:.82rem;color:var(--muted)}
+h2{font-size:1.1rem;margin:0 0 13px}label{font-size:.85rem;font-weight:700;display:block;margin:10px 0 5px}
+input,select,textarea{font:inherit;width:100%;padding:10px 11px;border:1px solid #ccd6e5;border-radius:9px;background:white;color:#17243a}
+textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button{border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:750;cursor:pointer;background:var(--blue);color:white;margin-top:12px}
+button.secondary{background:#e9eff9;color:#24436d}button.danger{background:#fff0f0;color:#a82d2d}.actions{display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.scroll{overflow:auto}.empty{padding:18px;text-align:center;color:var(--muted);font-size:.9rem}
+.bar{height:9px;border-radius:99px;background:#e8edf5;overflow:hidden}.bar span{display:block;height:100%;background:var(--green);width:0}
+.habits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.habit{padding:10px;background:#f6f8fc;border-radius:10px;display:flex;align-items:center;gap:8px}.habit input{width:auto}
+canvas{width:100%;height:220px;display:block}.notice{background:#fff8e8;border:1px solid #f1dfad;padding:12px;border-radius:10px;font-size:.84rem;color:#70551a}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin:22px 0}
+@media(max-width:720px){.stat{grid-column:span 6}.wide,.side{grid-column:span 12}.row{grid-template-columns:1fr}.habits{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">Offseason • Strength • Recovery • Performance</div><h1>⚾ Baseball Progress Tracker</h1><p>Build consistency before the season. Track your training, fueling, recovery, and progress.</p></div></header>
+<main>
+<div class="grid">
+<section class="card stat"><div class="label">Training sessions</div><div class="value" id="sessionsStat">0</div><div class="small">Logged workouts</div></section>
+<section class="card stat"><div class="label">Average sleep</div><div class="value" id="sleepStat">—</div><div class="small">Hours per night logged</div></section>
+<section class="card stat"><div class="label">Energy rating</div><div class="value" id="energyStat">—</div><div class="small">Average out of 5</div></section>
+<section class="card stat"><div class="label">Days tracked</div><div class="value" id="daysStat">0</div><div class="small">Daily check-ins</div></section>
+
+<section class="card wide"><h2>Progress over time</h2><div class="small">Optional weight entries are for general trend tracking—not a daily score. Leave blank if you prefer.</div><canvas id="chart" width="700" height="230" aria-label="Progress chart"></canvas><div id="chartEmpty" class="empty">Log a few check-ins to see your progress chart.</div></section>
+<section class="card side"><h2>Daily check-in</h2>
+<form id="checkinForm">
+<label for="date">Date</label><input id="date" type="date" required>
+<div class="row"><div><label for="sleep">Sleep (hours)</label><input id="sleep" type="number" min="0" max="24" step=".5" placeholder="e.g. 8"></div><div><label for="energy">Energy (1–5)</label><select id="energy"><option value="">Choose</option><option value="1">1 — Low</option><option value="2">2</option><option value="3">3 — Okay</option><option value="4">4</option><option value="5">5 — Great</option></select></div></div>
+<div class="row"><div><label for="weight">Weight (lb, optional)</label><input id="weight" type="number" min="1" max="800" step=".1" placeholder="Optional"></div><div><label for="water">Hydration</label><select id="water"><option value="">Choose</option><option>Needs work</option><option>Good</option><option>Great</option></select></div></div>
+<label>Daily habits</label><div class="habits">
+<label class="habit"><input id="meals" type="checkbox"> Ate regular meals & snacks</label>
+<label class="habit"><input id="protein" type="checkbox"> Included protein at meals</label>
+<label class="habit"><input id="mobility" type="checkbox"> Warm-up / mobility</label>
+<label class="habit"><input id="recovery" type="checkbox"> Took recovery seriously</label>
+</div>
+<label for="notes">Notes (food, mood, soreness, wins)</label><textarea id="notes" placeholder="What went well? What do you want to remember?"></textarea>
+<button type="submit">Save check-in</button>
+</form></section>
+
+<section class="card wide"><h2>Workout log</h2><form id="workoutForm"><div class="row"><div><label for="wdate">Date</label><input id="wdate" type="date" required></div><div><label for="type">Session type</label><select id="type"><option>Strength</option><option>Hitting</option><option>Throwing</option><option>Speed / agility</option><option>Conditioning</option><option>Practice / game</option><option>Recovery</option><option>Other</option></select></div></div><div class="row"><div><label for="duration">Duration (minutes)</label><input id="duration" type="number" min="1" max="600" placeholder="e.g. 60"></div><div><label for="effort">Effort (1–10)</label><select id="effort"><option value="">Choose</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div></div><label for="workoutNotes">Exercises, sets/reps, throwing volume, or notes</label><textarea id="workoutNotes" placeholder="e.g. Squat 3×5, rows 3×8; how did it feel?"></textarea><button type="submit">Log workout</button></form></section>
+<section class="card side"><h2>Weekly consistency</h2><p class="small">Aim for repeatable habits, not perfection.</p><div id="weeklySummary"></div><div class="notice" style="margin-top:14px">Fueling tip: eat regularly, include carbs for training energy, protein across the day, and fluids. Avoid trying to force rapid weight gain; growth and needs vary.</div></section>
+<section class="card full"><h2>Recent check-ins</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Weight</th><th>Sleep</th><th>Energy</th><th>Habits</th><th>Notes</th><th></th></tr></thead><tbody id="checkinRows"></tbody></table></div><div id="checkinEmpty" class="empty">No check-ins yet. Your first one starts the log.</div></section>
+<section class="card full"><h2>Workout history</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Minutes</th><th>Effort</th><th>Notes</th><th></th></tr></thead><tbody id="workoutRows"></tbody></table></div><div id="workoutEmpty" class="empty">No workouts logged yet.</div><div class="actions"><button class="secondary" id="exportBtn" type="button">Export my data (CSV)</button><button class="danger" id="clearBtn" type="button">Clear all data</button></div><p class="small">Your entries are saved in this browser on this device. Export a backup if you want to move devices. Clearing browser data may erase this log.</p></section>
+</div><footer>Made for your offseason. Consistency first. Play healthy.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toLocaleDateString('en-CA');
+$('date').value=today();$('wdate').value=today();
+let checkins=JSON.parse(localStorage.getItem('baseball_checkins_v1')||'[]');
+let workouts=JSON.parse(localStorage.getItem('baseball_workouts_v1')||'[]');
+const save=()=>{localStorage.setItem('baseball_checkins_v1',JSON.stringify(checkins));localStorage.setItem('baseball_workouts_v1',JSON.stringify(workouts));render()};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('checkinForm').addEventListener('submit',e=>{e.preventDefault();const d={date:$('date').value,sleep:$('sleep').value,energy:$('energy').value,weight:$('weight').value,water:$('water').value,meals:$('meals').checked,protein:$('protein').checked,mobility:$('mobility').checked,recovery:$('recovery').checked,notes:$('notes').value};checkins=checkins.filter(x=>x.date!==d.date);checkins.push(d);save();$('notes').value='';});
+$('workoutForm').addEventListener('submit',e=>{e.preventDefault();workouts.push({id:Date.now(),date:$('wdate').value,type:$('type').value,duration:$('duration').value,effort:$('effort').value,notes:$('workoutNotes').value});save();$('workoutNotes').value='';$('duration').value='';$('effort').value='';});
+function delCheck(date){checkins=checkins.filter(x=>x.date!==date);save()}function delWorkout(id){workouts=workouts.filter(x=>x.id!==id);save()}
+function render(){
+const sorted=[...checkins].sort((a,b)=>b.date.localeCompare(a.date));
+$('sessionsStat').textContent=workouts.length;
+const sleeps=checkins.filter(x=>x.sleep!=='').map(x=>+x.sleep), energies=checkins.filter(x=>x.energy!=='').map(x=>+x.energy);
+$('sleepStat').textContent=sleeps.length?(sleeps.reduce((a,b)=>a+b,0)/sleeps.length).toFixed(1)+'h':'—';
+$('energyStat').textContent=energies.length?(energies.reduce((a,b)=>a+b,0)/energies.length).toFixed(1)+'/5':'—';
+$('daysStat').textContent=checkins.length;
+$('checkinRows').innerHTML=sorted.map(x=>`<tr><td>${esc(x.date)}</td><td>${x.weight?esc(x.weight)+' lb':'—'}</td><td>${x.sleep?esc(x.sleep)+'h':'—'}</td><td>${x.energy?esc(x.energy)+'/5':'—'}</td><td>${[x.meals,x.protein,x.mobility,x.recovery].filter(Boolean).length}/4</td><td>${esc(x.notes||'—')}</td><td><button class="danger" style="margin:0;padding:6px 8px" onclick="delCheck('${esc(x.date)}')">Delete</button></td></tr>`).join('');
+$('checkinEmpty').style.display=sorted.length?'none':'block';
+const ws=[...workouts].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+$('workoutRows').innerHTML=ws.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.type)}</td><td>${x.duration?esc(x.duration):'—'}</td><td>${x.effort?esc(x.effort)+'/10':'—'}</td><td>${esc(x.notes||'—')}</td><td><button class="danger" style="margin:0;padding:6px 8px" onclick="delWorkout(${x.id})">Delete</button></td></tr>`).join('');
+$('workoutEmpty').style.display=ws.length?'none':'block';
+const cutoff=new Date();cutoff.setDate(cutoff.getDate()-6);const recent=checkins.filter(x=>new Date(x.date+'T12:00:00')>=cutoff);
+const habitCount=recent.reduce((sum,x)=>sum+[x.meals,x.protein,x.mobility,x.recovery].filter(Boolean).length,0);
+$('weeklySummary').innerHTML=`<div style="display:flex;justify-content:space-between;margin:12px 0 7px"><b>Check-ins this week</b><b>${recent.length}/7</b></div><div class="bar"><span style="width:${Math.min(100,recent.length/7*100)}%"></span></div><div style="display:flex;justify-content:space-between;margin:16px 0 7px"><b>Healthy habits checked</b><b>${habitCount}/${recent.length*4||28}</b></div><div class="bar"><span style="width:${recent.length?habitCount/(recent.length*4)*100:0}%"></span></div><p class="small">${recent.length?'Keep building a routine and adjust based on how you feel.':'Log a check-in to begin your weekly summary.'}</p>`;
+drawChart();
+}
+function drawChart(){const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const vals=[...checkins].filter(x=>x.weight!=='').sort((a,b)=>a.date.localeCompare(b.date));$('chartEmpty').style.display=vals.length?'none':'block';if(!vals.length)return;const nums=vals.map(x=>+x.weight),min=Math.min(...nums)-1,max=Math.max(...nums)+1;ctx.strokeStyle='#e2e8f0';ctx.fillStyle='#64748b';ctx.font='12px system-ui';for(let i=0;i<5;i++){let y=20+i*(h-50)/4;ctx.beginPath();ctx.moveTo(45,y);ctx.lineTo(w-15,y);ctx.stroke();ctx.fillText((max-(max-min)*i/4).toFixed(1),4,y+4)}ctx.strokeStyle='#2e69d1';ctx.lineWidth=3;ctx.beginPath();vals.forEach((v,i)=>{let x=45+(vals.length===1?0:i*(w-75)/(vals.length-1)),y=20+(max-(+v.weight))/(max-min||1)*(h-50);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();vals.forEach((v,i)=>{let x=45+(vals.length===1?0:i*(w-75)/(vals.length-1)),y=20+(max-(+v.weight))/(max-min||1)*(h-50);ctx.fillStyle='#2e69d1';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill()});}
+$('exportBtn').addEventListener('click',()=>{const rows=[['record_type','date','weight_lb','sleep_hours','energy_1_to_5','hydration','meals','protein','mobility','recovery','session_type','duration_minutes','effort_1_to_10','notes']];checkins.forEach(x=>rows.push(['check-in',x.date,x.weight,x.sleep,x.energy,x.water,x.meals,x.protein,x.mobility,x.recovery,'','','',x.notes]));workouts.forEach(x=>rows.push(['workout',x.date,'','','','','','','','',x.type,x.duration,x.effort,x.notes]));const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='baseball-progress.csv';a.click();URL.revokeObjectURL(a.href)});
+$('clearBtn').addEventListener('click',()=>{if(confirm('Delete all check-ins and workouts saved in this browser? This cannot be undone.')){checkins=[];workouts=[];save()}});
+render();
+</script>
+</body>
+</html>
